@@ -1,4 +1,5 @@
-import 'package:checkers_game/board.dart';
+import 'package:checkers_game/Piece.dart';
+
 import 'package:flutter/material.dart';
 
 void main() {
@@ -17,7 +18,7 @@ class MyApp extends StatelessWidget {
 
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const Board(),
+      home: const Piece(),
     );
   }
 }

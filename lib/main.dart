@@ -1,25 +1,32 @@
-import 'package:checkers_game/Piece.dart';
-
 import 'package:flutter/material.dart';
+import 'models/Board.dart';
+import 'widgets/board_widget.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const CheckersApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class CheckersApp extends StatelessWidget {
+  const CheckersApp({Key? key}) : super(key: key);
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
+    final board = Board();
 
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text('Checkers Board'),
+          centerTitle: true,
+        ),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: BoardWidget(board: board),
+          ),
+        ),
       ),
-      home: const Piece(),
     );
   }
 }
-

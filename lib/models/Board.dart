@@ -64,4 +64,5 @@ class Board {
       fromSquare.clearPiece();
     }
   }
+
 }

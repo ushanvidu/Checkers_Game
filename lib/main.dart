@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'models/Board.dart';
-import 'widgets/board_widget.dart';
 import 'screens/home_page.dart';
 
 void main() {
@@ -12,15 +10,10 @@ class CheckersApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final board = Board();
-
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Checkers Board'),
-          centerTitle: true,
-        ),
+        appBar: AppBar(title: const Text('Checkers Board'), centerTitle: true),
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(12.0),

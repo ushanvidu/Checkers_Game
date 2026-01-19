@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import '../widgets/custom_auth_widgets.dart';
+import '../utils/auth_exceptions.dart';
 import 'home_page.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -15,12 +17,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _passwordController = TextEditingController();
   final _confirmController = TextEditingController();
   bool _isLoading = false;
-  String? _errorMessage;
 
   Future<void> _register() async {
     setState(() {
       _isLoading = true;
-      _errorMessage = null;
     });
 
     try {
@@ -29,16 +29,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
       final confirm = _confirmController.text.trim();
 
       if (email.isEmpty || password.isEmpty || confirm.isEmpty) {
-        setState(() => _errorMessage = 'Please fill all fields.');
-        return;
-      }
-      if (password.length < 6) {
-        setState(() => _errorMessage = 'Password must be at least 6 characters.');
-        return;
+        throw FirebaseAuthException(code: 'unknown', message: 'Please fill all fields.');
       }
       if (password != confirm) {
-        setState(() => _errorMessage = 'Passwords do not match.');
-        return;
+        throw FirebaseAuthException(code: 'unknown', message: 'Passwords do not match.');
       }
 
       final userCred = await FirebaseAuth.instance.createUserWithEmailAndPassword(
@@ -51,19 +45,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
       await ref.set({
         "email": email,
         "uid": userCred.user!.uid,
-        // Add other fields as needed
+        "createdAt": DateTime.now().toIso8601String(),
       });
-      // log success
-      debugPrint('Registered user: ${userCred.user?.uid}');
+
       if (!mounted) return;
-      // navigate to home
-      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => const HomePage()));
-    } on FirebaseAuthException catch (e, st) {
-      debugPrint('FirebaseAuthException: ${e.code} ${e.message}\n$st');
-      setState(() => _errorMessage = '(${e.code}) ${e.message}');
-    } catch (e, st) {
-      debugPrint('Register error: $e\n$st');
-      setState(() => _errorMessage = e.toString());
+      // Navigate to home and remove all previous routes
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => const HomePage()),
+        (route) => false,
+      );
+    } catch (e) {
+      if (mounted) {
+        final errorMessage = AuthExceptionHandler.handleException(e);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(errorMessage),
+            backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
     } finally {
       if (mounted) {
         setState(() {
@@ -84,45 +85,60 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Create Account')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (_errorMessage != null)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 16.0),
-                child: Text(
-                  _errorMessage!,
-                  style: const TextStyle(color: Colors.red),
+      appBar: AppBar(
+        title: const Text('Create Account'),
+      ),
+      body: AuthBackground(
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const SizedBox(height: 20),
+                const Text(
+                  'Join Us!',
+                  style: TextStyle(
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-            TextField(
-              controller: _emailController,
-              decoration: const InputDecoration(labelText: 'Email'),
-              keyboardType: TextInputType.emailAddress,
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: _passwordController,
-              decoration: const InputDecoration(labelText: 'Password'),
-              obscureText: true,
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: _confirmController,
-              decoration: const InputDecoration(labelText: 'Confirm password'),
-              obscureText: true,
-            ),
-            const SizedBox(height: 24),
-            _isLoading
-              ? const CircularProgressIndicator()
-              : ElevatedButton(
-                onPressed: _register,
-                child: const Text('Create account'),
+                const SizedBox(height: 10),
+                Text(
+                  'Create an account to play online',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.grey[600],
+                  ),
                 ),
-          ],
+                const SizedBox(height: 40),
+                CustomTextField(
+                  controller: _emailController,
+                  label: 'Email',
+                  icon: Icons.email,
+                  keyboardType: TextInputType.emailAddress,
+                ),
+                CustomTextField(
+                  controller: _passwordController,
+                  label: 'Password',
+                  icon: Icons.lock,
+                  isPassword: true,
+                ),
+                CustomTextField(
+                  controller: _confirmController,
+                  label: 'Confirm Password',
+                  icon: Icons.lock,
+                  isPassword: true,
+                ),
+                const SizedBox(height: 30),
+                AuthButton(
+                  text: 'REGISTER',
+                  onPressed: _register,
+                  isLoading: _isLoading,
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );

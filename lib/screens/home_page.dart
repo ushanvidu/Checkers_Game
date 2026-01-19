@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'game_page.dart';
 
 class HomePage extends StatelessWidget {
@@ -8,6 +9,19 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 26, 158, 3), // dark theme
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout, color: Colors.white),
+            onPressed: () async {
+              await FirebaseAuth.instance.signOut();
+              // AuthStateChanges in main.dart handles navigation
+            },
+          ),
+        ],
+      ),
       body: SafeArea(
         child: Center(
           child: Column(

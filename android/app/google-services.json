@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "1095515049764",
+    "firebase_url": "https://checkersgame-fa807-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "checkersgame-fa807",
+    "storage_bucket": "checkersgame-fa807.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1095515049764:android:674d3f376b052d9a286db1",
+        "android_client_info": {
+          "package_name": "com.example.checkers_game"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAti_ZzCVyk1nVvKxs1Ae-jPCsXi7r-tPY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

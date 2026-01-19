@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'Square.dart';
 import 'Piece.dart';
-import 'dart:math';
 
 class Board {
   static const int size = 8;
